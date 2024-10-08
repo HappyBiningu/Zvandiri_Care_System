@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Patient</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="content">
+        <!-- Add Patient Section -->
+        <div id="addPatient" class="dashboard-card">
+            <h2><i class="fas fa-user-plus"></i> Add New Patient</h2>
+            <p>Fill in the details of a new patient in the form below.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }} <!-- Render form fields here -->
+                <button type="submit" class="btn btn-success btn-lg btn-block">Add Patient</button>
+            </form>
+        </div>
+    </div>
+    
+</body>
+</html>

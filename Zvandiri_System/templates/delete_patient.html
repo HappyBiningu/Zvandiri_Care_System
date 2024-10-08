@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Patient</title>
+
+    <!-- Bootstrap and Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/47101d2035.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .form-card h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .btn-block {
+            margin-top: 20px;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-card">
+        <h1><i class="fas fa-exclamation-triangle"></i> Delete Patient</h1>
+        <p>Are you sure you want to delete patient <strong>{{ patient.patient }}</strong>?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg btn-block"><i class="fas fa-trash"></i> Delete</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-lg btn-block"><i class="fas fa-arrow-left"></i> Cancel</a>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>

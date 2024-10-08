@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction History</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Prediction History</h2>
+        <ul class="list-group">
+            {% for item in history %}
+            <li class="list-group-item">
+                <strong>{{ item.patient }}:</strong> {{ item.prediction_text }} <br>
+                <em>Date:</em> {{ item.date }} <br>
+                <em>Recommendations:</em> 
+                {% if item.recommendations %}
+                    <ul>
+                        {% for recommendation in item.recommendations %}
+                            <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No recommendations available
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

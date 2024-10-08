@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Care Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/47101d2035.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #28a745;
+            padding-top: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s, padding-left 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #218838;
+            padding-left: 30px;
+        }
+
+        .sidebar a.active {
+            background-color: #218838;
+        }
+
+        .sidebar i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar a:hover i {
+            transform: rotate(20deg);
+        }
+
+        /* Main content area */
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            transition: margin-left 0.5s ease;
+        }
+
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Form Styling */
+        .form-inline input {
+            width: calc(100% - 140px);
+            margin-right: 10px;
+        }
+
+        .form-inline button {
+            width: 120px;
+        }
+
+        /* Patient List Table */
+        .table {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .table th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Pagination Styling */
+        .pagination .page-item.active .page-link {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .pagination .page-link {
+            color: #28a745;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #28a745;
+            color: white;
+        }
+
+        /* Chatbot Icon */
+        #chatbot-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        #chatbot-icon:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+    
+        /* Chatbox Layout */
+        #chatbox {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+    
+        /* Chatbox Header */
+        #chat-header {
+            background-color: #28a745;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+    
+        /* Chat Messages */
+        #chat-content {
+            padding: 10px;
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+        }
+    
+        .message {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 20px;
+            max-width: 75%;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+    
+        .message.user {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+    
+        .message.bot {
+            background-color: #fff;
+            align-self: flex-start;
+            border: 1px solid #ddd;
+        }
+    
+        /* Chat Input */
+        #chat-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #ddd;
+        }
+    
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+    
+        #send-btn {
+            background-color: #28a745;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+    
+        #send-btn:hover {
+            background-color: #218838;
+        }
+    
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            color: #aaa;
+        }
+    
+        .dot {
+            height: 8px;
+            width: 8px;
+            background-color: #aaa;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1.4s infinite both;
+        }
+    
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+    
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+    
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        /* Prediction History Styling */
+        .list-group-item {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .list-group-item:hover {
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-group-item strong {
+            color: #28a745;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.8s forwards;
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Hide the chatbox on small screens */
+        @media (max-width: 768px) {
+            #chatbox {
+                width: 90%;
+                right: 5%;
+                bottom: 70px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <a href="#"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAMAAzAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAAAQQFBgcDAgj/xABPEAABAwMBBAcDBgoHBAsAAAABAgMEAAUREgYhMUEHEyJRYXGBFDKRFSNicqGxJDNCQ1JzgsHC0RY0N3SSk/BTY5ThJSYnNUVGVYOjw9L/xAAbAQEAAgMBAQAAAAAAAAAAAAAAAQMCBAUGB//EAC0RAAICAQMCBAQHAQAAAAAAAAABAgMRBBIhBTETIkFRFDKBoSM0UmFxscFC/9oADAMBAAIRAxEAPwDcaKKhrztJabMMT5jaHMfik9pZ9B++hMYuTwkS5zQayy89KEhwqbs8RLKOAef7Sj4hI3fGqdLv95uLg665S3FqVhKUKI38sAVW7Yo6VXSb5x3S4X7n0Jzo41EbLNTImz0NF3cJlIZBdUtWdPPBPh31IxpcaUnrIshl5Gcam1hQz5irMnNlHDa74O9FM7xcGrXa5U98EojtqcKU8TgcB4nh61RNmOkKZdb4xBlwGUNPqKUlpR1I888ahySeC2vT2WQc4rhdzRh6UZCQSSAKpe3O2gsP4FBCHJyk6lKV7rQ5Z7ye6s3bVtLtK84pldwnLQe11bmhKd3AnITz4ccVhKxJ4NijQTth4kmox92b5uUMjfTS53CJa4qpU6QiOynAK1nAz3Vg9uvl6tT34FNkJdQsgsuOFYKgcaTknnu3VoXS6lxzZm2uLA1CclSgOWWXR95orE4tmVnT3XbCEnxL2Lfa73bLqyt+DMadQ2cLIONPn3VxG1Fh9o9nN3hddnHV9aM1gaXnW0ONodWlt0BLiEq9/fkZHOpK6bOXK2WyPOuDKGWZCtLaCrt5wSMjkMA1Wrm12N2XSK4T2zsxnsfQCFJUkKSQQRkEHca9DfWe9Edzcftk2E8vLURSS2VHOlKgcjyGPtqG2v6Qpj8l2NY3hGitnBkAdteOJGdwH31b4ixlnOjobZXOqPp6mt1T+lC4mDsytppeHJSw1uODp4qrMflTadtJlddd0o97ruqc0478kacVzu+0NxvkWK1cHQ8I5Km143qyMb++q5XLDN6jpU43R5TSfOCZ6K0Pr2tbLSlJQiO4t3uKdwAP7Skn0rRdqtroGzRabktPvvOgqSyyBnSOZKiB9tV7oet/VwJ1zWnfJdDLZ+gjif8AEpQ/ZFd9r4uze0lyRDVeG2Lmz82kjeDk+6TwznxzWUc7OCvVyqt1rc09q9izbN7RQdo4pfglYKDpcacGFNnxqZqtbG7KM7MtSNL6n35BT1jhGBgZwAPU/GrLkd9WLOOTmWqCm/D7BRRRQrCiiigMMve3V9uy1JQ/7FHV7rMUkKx3KX7xPlgeFLZthr3eMOKj+yMK3l+Vuz5J4n1wD31qto2Tstpd62HCSHT+cc7Sh5Z4VI3Oai3W6TNd3pYaU4RnjgcPWq/Dz8zOvLqKgtmmht/swnam2xbPdjbokh2S6wn8KeWQAXFAHSlPABIxv3nKiM7qu/Rfsw31Yvs1GpasiKk8AOa8d55H+dUCHHfvl7ZZUdb8yQdauWVHKj9pr6DiR24kdqOynS20kISO4CsK4qUtxsdQvnVRGnPmfLK50i2u4XbZtbNtUrW26l1xpJwXkAHKfPJCsc9OKynZa/ydnbkmSzlbJOmQwN2seG73hy+G6t+VvFZl0k7IEdZerW19KU0gcfpjx76ssT7o1enX14entXEvUlOka7x5OxCHIbgW3PcbShSTjd7/APDj1qsdEsD2naB6YoZTFZOFfSVux8M1UFTJBgtwy6TFQtTiGzwCjjJH+uJrVuiSAGNnnZh3rlPnB70p3D7dVVxe+eTbvq+D0co/qf2Mt2ilvv3W5y3T871rp7XLSSB6YArfLJbY1otTECGgJZZRgd6jzUfEneT41kPSLY3bXfnn9H4HMVrSrG4KPFP+uNPrf0kXKHbGoi4jMh5lsIDy1kFQAwCRjeeH20g1GTyNVVZqtPU6ey9CrXZHybfZyXPzExa1Dw16sfDFaR0vuf8AVm2FJ3KnJP8A8LtZncpUi5SZFylI1de5lxxKCG9WMYzw4Abs1abpNk3rowhyH0LPybPCC6RkOIDakhWefvgE94NRH/pF2pj56JSxxhMadHFqbum0ranxqbip6/SRuJ4D7atHTItQhWtGNxdcUT5Afzph0NMqVcbjJAy2GUt6hwznOPhUv0xNarHCfA9yVoJ7gpJ/eAKlL8LBrX27+pRfosFa2OechbH7WSmldtDKQjHLsqqO6O7dHuG1kVmSnW0y2t/QrBBUkpCc57irPmBU/wBF8JNyt1/gupyw+hDaj44V/Oqo63ctk78E72ZkdWptWnKXE8D5gjl91Q+Esm0vxLL6ovzPsb/gFJSQCMbweBr582sMdjaO6+ytpbYQ8ogJ3DgM/bmrkrpTk+xkJtjYk43K63seff6VRoja7jd2EOYUqXMSXN3ELX2vvNTbNSWEVdO0t2mlOyxYSRtFsSjZfYVpbyd8SEXXQn8peNRx4lR+2sXtUZ+53WLGCgp+RIGteCCSTqUofaa1PpamGNswxERke1SUIODvCUgrz8UpHrVa6JYAkX5+apPZjM4QT+krd9wqZ8zUSrRvw9LbqJepbekPaKRs9a4rNtWhMyQrSlbidWhCRvVjmd4HqagtmeklKGHWto3FKdQR1LrTJyscwrHZz4jFQXSbcRN2pdbSctxUBkefFX2nHpT7Zzo7eusBudPmeztPJC20IRqVpO8E5o5Tc8RENNpIaSMr+JMutv2/2bmvBn24x3CeElpTY8tR7P21ZgrKc5yDwxXz1f7e1bLvKgMPKfQwvSVrSASRx3CtW2VuHyL0dQ7hdVqKGmVOJzxLZUS2keOkpA9KzhNt4Zq6zRV1xjOp5TOW2+2z2zs9mFFhtvOKb6xanVEAdwGKebOba2+7272iQRDeSvQ40tWoZwDkHG8bxyHOq+zd7Ht/MRAuMJ+HLAJjuhYyRxKcj7qtVn2RtFoiGO1G67UorUt7tEncPQbuFSst5T4K5wprrULItTLBwqk9K9wMbZxEVOdct4Ix3pTvP7quxrIul2YXr7Gh5OiOxqUPFX/KljxFkdOq8XUxj9Tx0SW/2raB6asZTDZ7P115A+wLrT7vfbXZmusuc1pjIylBOVq+qkbz6CsQtW0lzs9ufh251LBfd1rfACnD2QAkZ3Abj38ad2jZC/X9wPllxKV71SpijlXqe0arhPy4SOlq9J4lztvltj9y33HpUipXi22xx9H+0fX1efIAE/HFW/Zq8I2gszU5LBaDuQtpR1YI3EZ5iqzaui+2xwlVyfdlr5oQerQfDdvPxFXeHDZhRm40VpLTDYwhCNwAqyO7PJzNU9LhRoTz7szDaXo4uBui3rChhUV46urcd0FkniPq+W+tF2ftvyRZodvKgtTDQStYGApX5RHmc1I4oxUqKTyiu3VW2wjCbykcJcRiawtiWy280oYUhxIIUPGoL+hGzYc1i0sfUI7Pw4VZMUmKnCKY2Tj2Y2TBiIjCMiMyGAMdWEDTjyr37O2GupDSA1jGgAY+FdqWhGWcI8ZmMjq47SG05zhAwKWQw1JaU2+2lxtQ7SFAEGuxpKnBGXnI1hQo8JkMw2GmWhwQ2gJA9BXO6WmDdWOpuMVuQjORrTkpPeDyPlT7hRiowSm08lOX0abMlzX1ElIz7iZTmPvpva+jiJbr43PbmurjtL1tR1J3g+Ks7x6etXnFFRsj7F/xV+GnJ4/kofSjYbpeE26RamDITG6xLjCVpSo6tJChqIGBpPxpzsJaJGzOzkqTcWuqkLKnlt6gopSkbgSMjNXMivLjSXW1NrSFIUkpKTzB5U2rduHxM/BVL7ZyfPERh/aG+sxtSutuEjtKO44O9SvNKdR9K+hkNpabS22kBKQAkdwqCs2xtlss9U6DGUl450alkhvPHSOVWHFYwjtzku12qWocVFYSRXrrsdZLtOEydCC3RxKVqSF/WAOFeoqi9Kt66+a1Yo2AxECVvhO4FwjKU+QGD46h3VqF1nNWy2yZz+9uO2XCBxOOXrXz8y1Kvl4SknXLmyCpZHDUo5Ppx8gBWNvbC9TZ6ZBzm7bH5YF46KLAp6U5e5CQG2gWow/SV+Ur04fGtSIPKm1rgs2yAxCjjDbKAkePjTurIx2rBoaq932ubEqmbYbCf0huLc1maIzmkId1N69QHDG8YNXSipaT7lVdk6pboPDKxs/sRaLLpcS17RJH598BR9BwHpVlCcEY4V6ookl2E7Jze6TywpaQ0VJgLRSUUAtJRRQBRXGRKZjLZS+sILy9CM8CrurjPuLMAxjICgh99LAXjsoUrOnV3AkBI8VCgD21Jua4KkKSsMh1KjwWM4OPLd8ad8KjbtFeckwpcVAL0d3tDIBLahhQ/f6Vy2vfeh7JXuVFcLb7NvkONrTxSoNqII9aAfXGSIkCRJ3fNtFYz4CukNa3IjDjoAcU2lSgOAJG+md8ivTrW5FZ950pSonA7ORn7M04mTmoSoyFpUpUh4MtpQM5OCfgACfSgHOaM0xu84W+C48kdY7kIabTxWtRwlPqSK9WyO/GgMsy5C33wMuOKOcqO848ATu8MUA9paSloAooooDhNiszYj0WSgOMvIKFpPMGq5s/sNa7FcDOjqeddAIb61Werzxx3nHM76tNFRhGcbJRTinwxOdLSAHnS1JggooooAooooANFBooAooooBCcUZoNQr90k2uYsXZpHsDi/mZrIIS13IeB93wX7p56d2QJCfGjXKM7EkYUhQwrB7SDxBHceYpizFfn2iRbby2okZZLqeDycDDg7j9xBxyNLcoDxeTc7QpAnJTgoKsIlI/RUeR7lcj4VxXcZNztiZdkJTLjO/PQZCQlSiAdbK/0VYOQoHGdJ3pJyA6sUx1+OuNNP4bEX1L/ANM8l+Shg+eRyqM2nnIuHR5f30JUj/o2WlSFcUqS2sEH1FenJzBXG2giauoX+DzEkFKkDOAVDkpCtxHLJqI2iltN2za2zx9b7suI6uO3HbU723WlJKDpBwdYzvx74rGUox7sYLbOmLjyIEdpIUqS9oOeSQkqJ+ApokCZtIt1Qy1bmtCcf7VeCr4JCfiajJd/gfK8eVIU+zFiRnVlcmM4yC4dIABWkb8aq9tvSo9njx4qgLpdlqc18ep1b1OH6qSMDmrSOdIzjPmLyThomeqiXKUxNQ71ohuOoSEnshwHQonxThQ8MmvEG4uT5j3syAYLXY64/nF536fAcM99RZbQ9p2bsxWzEiIS3NkpUSW043NBXNxQ3k5yAcnepNS8hDrNuVGsSYyHUYab1/i2fEgccDfjdnvHGsiDobmx8qJtzYU4/wBX1jugZDKeWo8tR4Dng91PqjrVbGbZG6pkqWta+sdfcOVvLPFSj393IYAGAMVI0AUUUUAlFFFAFFFFAFFFFAFFFFABooNFAFB3CikIzQHlShpJIyRwAplBuMS562k5S8kYdjPDC0jhvSeXjwptKtsyK6uTZ5QGo6lxJJJaWfAjeg+WR4GukiIxcIjcm4RzFkNp1a0uDWweeFigElKctTLPsMJLkFlOFtNe+gd6RzA7vhTaRHRMUm+WB1sy9Ohe/CJKBn5tzuIJODxSfAkFlZ39pbjFLkeRCaiFX4NJkxlKefRyWpCVJCc8u8YOBmhdl2ibnpmxLha2nlH59KYjiUSBjdqHWEZ+kBmgGj7qLnNkKhl6MwtGi4MKTgqc/RPccbiRxBHhTxllqO0GmG0NIT7qUDAHkK5NWjaNnrFH5LfW44pxR1ON5JPkrgMD0roIm0A9+3W/H0Lgv97VeP6roeoau54XlXbk3KZ1wWD2OyMDuxUbIYctfXTbUpEdTiA06ojIYRqyXEJ4Apyo44Hnwp8pUlh9tqdFDCnQerUh0OJJHLOBvxv4cjXUaSdKgCDuUCOI5iuNTZqem3pyWH/he1G2PB6iJC4/yVs4rq4zSlCRPJ1HUSSvST77hOSVcAT37qdolWuytJgQ0qceTv6hga3FE8So955kmoG3rai7Pw03u+MW+C0DHaZbcDJd0Eo7SycqJxnCccedSsK4x2muq2fsc11vOOsUx7O3nvKnMKI8QFV9Hg90UzmvgfRfleVJQ9JDMKMk56kfOOLH0lcE+malC4kEBRAzuGTx8qaW9c11parg3Hac1HQmO4XAkY5qIGTnPKuUGyxorwkOLelSwMe0SF6lenJPkAKyIJOiiigEooooAooooAooooAooooANFBooBCcVGXS7KiSGYkSK5MmPJUpLSCEhKRxUpR4DJA8eVPpspmFDflSnEtsMtqccWrglIGST6CojZiO84h+8XBpTcy4EL6pfvMMj8W2e4gHJH6SjQCmffU4L1kZWnmGJoKh/iSkfbUFKuEi5y3G7/bbhCtTSgERExlOGTw3uqRkac/kAnPM8qu/ChIAoCERtLCVhLEW4uHklEJz+VObbOnzJC1P2xcSGEjQp9wdatWf0BnCcY3k58N2+S+2g7zQCjBG7h50VF3O6uWx5C5MdRt5Hbko3lk96k/o+I4VItOoeaS6ypK0LAKFJOQoHmDQEdtFH662rcTjrWCHWyeGRy8iMiq29e4DbBeQ6H1FvWhpntrXuyEgDnVlk2GBMlLkTEOPqVjsOOqKBjuTnFPY0ONETpisNMp7m0BP3Vy9d0qrWTjOb5RbC1wWEVDZO3ymbZGnW2FYkuS47bqpqNfWSAoZ1KOgHfnOM7s1PaNoFHIetif/AG3D+8U12UCWE3Oyr/8AD5i0tjh8y5843jwAWUfsGnh2btf5DLiPqPrH766aSSwio5mPtKRn5UtafD5PWr/7RUnDElMZCZrrTsge8tpsoSfJJJx8aZsWRhh1Djcmb2FBWgyFFJxyIPKpLFSBRS0gpaASiiigCiiigCiiigCiiigBW4Uyn3WBbkBc6Yywk8OsWAT5DnTTauY9DsMlcVemU7pjxj/vXFBCPtUD6VwXBtWzNvXLaipW+hAQl1Z1vPL4JGo5OSfHnQEe5cW9rbo1bIzMpNuiqRJmrfYU2HsHLbYCsEgkaju4JA4Kq2ngeGajrBAXAhn2lQXMkKL0lf6Sz+4bgPAVIq90+VAUGPGvM7Z+TeFbV3RtaQ8tLTTbAQnSVYG9snG7vrPDtftOQCb/ADfQNj+GtTso/wCz2V+pk/eusSQOyPKqbW1jB2OlU12KW9ZJg7W7TH/zBO+Lf/5q+dEt4ul1lXdF0uD8xLKGC312nslRczjAH6I+FZZWj9Cn9cvv6qN971Y1yblybOv09UKHKMeTVCArcQDVUu0Z3ZRp67WdSU29KguXbl/i8E71tH82rfkj3T3A76tlV7pB3bD35Q4pguqHokmtg88WEUUUUBU78q423amHLtLER43FgxHkSnlNBSm9TjeFJSrBwXuI7qfC+XCP/wB4bPTmwOLkVSJCPQJIWf8ABTy929dxjNoadDL7LyHmHCnUEqSc7x3EZB8Caa/KN4hj8OtQkJ5uQXNRx36VYNAK1tVZVqCHJyYzh3dXLQphZ/ZWAal23A42lxCgpKt4KSMEUxgXGBeW3UN9vqyA6w+3hSCeGpJ9d9M9mwmC9cLOBpTFd6xgcB1TnaAHgFah8KAnhS0gpaASiiigCiiigCiiigCiiigK7dD7dtVaLfnLUJC7g/jvwWmknzK3FebVTEmGxKWwuQnUWF9YjfwUN2fOovZsCVOu923ESJPUNH/dM5QB5a+sV+1U9QCAeXhSL9xXlXqvK/cV5GgKlZv7PJP93k/x1iKPcHlW32f+zx/+7SP4qxBHuDyqi47nR+0/oLWj9Cf9evv6qN971Zwa0foS/r19/VRvverGr5jb6n+Wf0NVqPvtuTd7LPtrjim0TI7jBWkZKQpJGQOfGpClrZPMFeMvaS3j8Kt0e7NAb3IDgZd/y3DpP+Z6V2ibU2mTJREckKhTFnCYs5tUdxZ+iFga/NORU3TeZEjTWFx5kdqQyvcpp1AUk+YNAdRvHCvVVZNuYsO0FqatYeYiSy605GDyiyCEFSdKCcJ90+7irSOFART9uWraWJdGVJSlEV2PITzc1KQpHnpKV+Wo99N7v+A3u3XEHDbhMR/eAMK3oJ/aGPWp2oXa/T/R2Wg+8oJS2eYWVAJI8jg0BN0VzaCkoQlStSgAFHvrpQCUUUUAUUUUAUUUUAV4fStTLiWlaHCkhKsZ0nG417ooCC2NcQbCxF06H4RMWS3nJS6jj8dygeYUDzqdqtXAfIm0bFzGUwrmUxZueCHhuZcPnnqyeeW+6rIONALXlz8WryNeq8O/il/VNAVSzf2dvf3WR/FWII9weVbfZ/7Oncc4j/8AFWIIIKQRwqi70O50ftMWtG6E/wCv3z9VG+96s5NaN0Jf16+/qov3vVhV8xt9T/Lv6GrUtJSito8wFFFFAQ17jPu3KyvR2i4I8wrdwQNCC04nPxIqYpaKASoTaH56RaYRGrrpgWr6qAVffipyoNeJG1zYycRIalY5BS1YH2JNATYpaQUtAJRRRQBRRRQBRRRQBRRRQDa5wmbjb5EKSnU0+2UKA47+Y8aY7NzXZMVyNNVqnQl9RIOMayOC/wBoYPxHKpc1Ez9nLRcZJkz7ew8+UhHWKTv0jgM8+J+NAS1eHh80v6pqEOx2zv8A6Ux9v86g7hZbK/LdtNitUZ2cjAfeVqLUQEZ7eDvVjeEcT4DfQE5sWnOysIKTkFCsgjj2jTK+bBWW7FS+oMV8j8Yx2fiOBqX2asUPZ62ogwUq0jetazlS1HiT/IbhwFStGsmcLJ1vMHgxK+dHN6tupyEEz2Ryb7K8eR4+lP8AommxbTcb61dZDUFzq4wCJKw2rcXc7lY7610/ZTZ2BEfWVvxWXFn8paATWCgk8m3Zr7LKvDkMTtRYBuN6gf8AEJ/nXg7WbOjcb3A/4hNPxbIA4Qo3+UKUW+EN3sbH+UKzNEZRNprHMkpixLtDefWey2h4EmpgU3TFjtqCm47SSOGlIBFdxwoBaKSigFqEsyVuXa8ynEqSFPoZbJGMpQkHPxUamqTGM6QKAUUtIKWgEooooAooooAopMiloAopMiloApDwpaQ76Agpj8+5y1wLYVxWGzpkzlJ3/UaB4n6R3DxNSdst0W1w0RYLIaaSScZyVKJyVKPEqJ3kneacjcd9es0AUtJRmgA0UUCgCikzuzyozQC0UUZFAFFJmloAoozRQAKWvIIxmlzQBRRRQCGmM26RYToafWQop1f6+FPjTaRDYkLC3mwpQGMkUJWM8n//2Q==" alt="Logo" style="height: 50px; vertical-align: middle;"/></i>
+       </i>
+        Zvandiri Dashboard</a>
+        <a href="index/" class="active"><i class="fas fa-chart-line"></i> Predictor</a>
+        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div id="addPatient" class="dashboard-card fade-in">
+            <h2><i class="fa fa-user"></i> Welcome to Zvandiri Care Predictor</h2>
+        </div>
+
+        <!-- Patient List Section -->
+        <div id="patientList" class="dashboard-card fade-in">
+            <h2><i class="fas fa-users"></i> Patient List</h2>
+            <p>Below is the list of patients with their details:</p>
+
+            <!-- Search Form -->
+            <form method="GET" action="" class="form-inline mb-3">
+                <input type="text" name="q" value="{{ query }}" class="form-control mr-2" placeholder="Search by PatientID">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            </form>
+
+         <!-- dashboard.html -->
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Phone Number</th>
+                <th>Health Facility</th>
+                <th>Status</th>
+                <th>Actions</th> <!-- New column for actions -->
+            </tr>
+        </thead>
+        <tbody>
+            {% if patient_list %}
+                {% for patient in patient_list %}
+                <tr>
+                    <td>{{ patient.patient }}</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>******{{ patient.phone_number|slice:'7:' }}</td>
+                    <td>{{ patient.location }}</td>
+                    <td>{{ patient.prediction_history }}</td>
+                    <td>
+                        <a href="{% url 'edit_patient' patient.patient_id %}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{% url 'delete_patient' patient.patient_id %}" class="btn btn-danger btn-sm" 
+                           onclick="return confirm('Are you sure you want to delete this patient?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">No patients available.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+
+      <!-- Prediction History Section -->
+<div id="predictionHistory" class="dashboard-card slide-in">
+    <h2><i class="fas fa-history"></i> Prediction History</h2>
+    <p>View the history of patient care predictions and the recommendations given.</p>
+
+    <ul class="list-group">
+        {% if page_obj %}
+            {% for item in page_obj %}
+            <li class="list-group-item">
+                <strong>{{ item.patient }} ({{ item.gender }}):</strong> 
+                {{ item.prediction_text }} <br>
+                <em>Date:</em> {{ item.date|date:"Y-m-d H:i" }} <br>
+                <em>Recommendations:</em> 
+                {% if item.recommendations %}
+                    <ul>
+                        {% for recommendation in item.recommendations %}
+                            <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    No recommendations available
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No prediction history available.</li>
+        {% endif %}
+    </ul>
+</div>
+
+
+
+            <!-- Pagination controls -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&q={{ query }}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&q={{ query }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+<!-- Chatbot Icon -->
+<button id="chatbot-icon"><i class="fas fa-comments"></i></button>
+
+<!-- Chatbox with Enhanced UI -->
+<div id="chatbox">
+    <div id="chat-header">
+        <h3><img src="data:image/jpeg;base64,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" alt="Logo" style="height: 50px; vertical-align: middle;"/></i>
+       </i>Chat with Bheki</h3>
+        <button id="close-chatbox">&times;</button>
+    </div>
+    <div id="chat-content">
+        <div id="chat-messages"></div>
+    </div>
+    <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+
+<!-- JavaScript for toggling chatbot visibility and theme switching -->
+<script>
+    const chatbotIcon = document.getElementById('chatbot-icon');
+    const chatbox = document.getElementById('chatbox');
+    const closeChatbox = document.getElementById('close-chatbox');
+    const sendBtn = document.getElementById('send-btn');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    chatbotIcon.addEventListener('click', () => {
+        chatbox.style.display = 'flex';
+    });
+
+    closeChatbox.addEventListener('click', () => {
+        chatbox.style.display = 'none';
+    });
+
+    sendBtn.addEventListener('click', () => {
+        const message = userInput.value;
+        if (message.trim()) {
+            // Display user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = message;
+            chatMessages.appendChild(userMsg);
+
+            // Reset input
+            userInput.value = '';
+
+            // Simulate bot response after 1 second
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.textContent = getBotResponse(message);
+                chatMessages.appendChild(botMsg);
+            }, 1000);
+        }
+    });
+
+    let previousChoice = null; // Store the previous choice made by the user
+
+    function getBotResponse(message) {
+        const greetings = ['hey', 'hi', 'hello'];
+        const lowerCaseMessage = message.toLowerCase();
+    
+        // Check for greetings
+        if (greetings.includes(lowerCaseMessage)) {
+            previousChoice = null; // Reset previous choice
+            return (
+                "Hello! I'm Bheki! 😊 How can I assist you today?\n" +
+                "Please choose one of the options below:\n" +
+                "1. 📝 View Patient List\n" +
+                "2. 📊 Check Patient Predictions\n" +
+                "3. 🛠️ Help with the Dashboard\n" +
+                "4. 📈 View System Statistics\n" +
+                "5. 🧬 Learn about Viral Load Count\n" +
+                "6. 💡 Mental Health Support Information\n" +
+                "7. 🚪 Exit\n" +
+                "👉 Please enter the number of your choice:"
+            );
+        }
+    
+        // Check for valid menu options and handle the user's previous choice
+        if (previousChoice === null) {
+            const responses = {
+                '1': "Would you like to view the patient list on the dashboard?",
+                '2': "Do you want to check patient predictions in the 'Predictions' tab?",
+                '3': "Do you need help navigating the dashboard features?",
+                '4': (
+                    "System Statistics:\n" +
+                    "- Total Patients: 120\n" +
+                    "- Patients with Suppressed Viral Load: 85\n" +
+                    "- Patients needing follow-up: 35\n" +
+                    "- Clinical appointments missed: 12\n" +
+                    "Would you like more details on any of these?"
+                ),
+                '5': (
+                    "Are you interested in learning more about the viral load count?\n" +
+                    "A suppressed viral load indicates effective treatment. Would you like more details?"
+                ),
+                '6': (
+                    "Are you looking for mental health support information?\n" +
+                    "I can help refer patients flagged for mental health concerns. Should I continue?"
+                ),
+                '7': "Are you sure you want to exit? Feel free to return anytime! 👋"
+            };
+    
+            // If the user inputs a valid option, store it as the previous choice
+            if (responses[message]) {
+                previousChoice = message;
+                return responses[message];
+            } else {
+                return "I didn't quite catch that. Please select a valid option by typing the number.";
+            }
+        }
+    
+        // Handle "yes" or "no" confirmations
+        if (lowerCaseMessage === 'yes') {
+            switch (previousChoice) {
+                case '1':
+                    return "Here's the patient list: [List of patients]. Would you like to do anything else? (Type the number of your choice or type 'exit' to leave)";
+                case '2':
+                    return "Fetching patient predictions... Would you like to see anything specific? (Type the number of your choice or type 'exit' to leave)";
+                case '3':
+                    return "Here are the dashboard features you can use: [List of features]. Do you need help with something specific? (Type the number of your choice or type 'exit' to leave)";
+                case '4':
+                    return "Would you like more details on a specific statistic? (e.g., patients needing follow-up). Type the number of your choice or type 'exit' to leave";
+                case '5':
+                    return "More details on viral load: [Detailed explanation]. Would you like to know anything else? (Type the number of your choice or type 'exit' to leave)";
+                case '6':
+                    return "You can refer patients flagged for mental health support to a specialist. Do you need help with referrals? (Type the number of your choice or type 'exit' to leave)";
+                case '7':
+                    return "Goodbye! 👋 Feel free to come back if you need further assistance.";
+                default:
+                    return "I didn't quite catch that. Please select a valid option by typing the number.";
+            }
+        } else if (lowerCaseMessage === 'no') {
+            // If the user says "no," prompt for the next action
+            return "Okay, what would you like to do next? (Type the number of your choice or type 'exit' to leave)";
+        } else {
+            // Handle other inputs
+            if (message === '7') { // If the user wants to exit
+                previousChoice = null; // Reset previous choice
+                return "Goodbye! 👋 Feel free to come back if you need further assistance.";
+            } else {
+                // Reset previous choice if the user does not confirm or provide a valid input
+                previousChoice = null;
+                return "I didn't quite catch that. Please select a valid option by typing the number.";
+            }
+        }
+    }
+    
+    function randomChoice(choices) {
+        return choices[Math.floor(Math.random() * choices.length)];
+    }
+    
+    
+
+    // Theme Toggle Logic
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        chatbox.classList.toggle('dark-mode');
+        chatHeader.classList.toggle('dark-mode');
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient List with Predictions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Patient List and Predictions</h2>
+
+        <!-- Patient List Section -->
+        <ul class="list-group mb-4">
+            {% if patients %}
+                {% for patient in patients %}
+                <li class="list-group-item">
+                    <strong>{{ patient.name }} ({{ patient.gender }}):</strong> {{ patient.status }} <br>
+                    <em>Age:</em> {{ patient.age }} <br>
+                    <em>Location:</em> {{ patient.location }} <br>
+
+                    <!-- Optionally display recommendations if available -->
+                    {% if patient.recommendations %}
+                    <em>Recommendations:</em>
+                    <ul>
+                        {% for recommendation in patient.recommendations %}
+                        <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    
+                    <!-- Action Button for prediction -->
+                    <a href="{% url 'predict_for_patient' patient.id %}" class="btn btn-success mt-2">Predict Care</a>
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="list-group-item">No patients found.</li>
+            {% endif %}
+        </ul>
+
+    </div>
+</body>
+</html>

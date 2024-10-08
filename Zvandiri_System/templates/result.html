@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Care Recommendation Result</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/47101d2035.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .result-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .result-card h1 {
+            color: #28a745;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .result-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .recommendation-section {
+            margin-top: 20px;
+        }
+
+        .recommendation-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .recommendation-section li {
+            text-align: left;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .recommendation-section li i {
+            color: #28a745;
+            margin-right: 10px;
+        }
+
+        .back-home-btn {
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+
+        .error-message {
+            color: #dc3545;
+        }
+
+        .error-message h1 {
+            font-size: 1.8rem;
+        }
+
+    </style>
+</head>
+<body>
+
+  <div class="result-card">
+    {% if classification %}
+      <h1><i class="fas fa-stethoscope"></i> Care Recommendation</h1>
+
+      <!-- Patient Details -->
+      <h3>Patient: {{ patient_name }}</h3>
+      <h4>Age: {{ age }} years</h4>
+      <h4>Health Facility: {{ location }}</h4>
+
+      <!-- Classification Result -->
+      <h2 style="color: #28a745;">{{ classification }}</h2>
+
+      <!-- Recommendation List -->
+      <div class="recommendation-section">
+        <h3><i class="fas fa-notes-medical"></i> Recommendations</h3>
+        <ul>
+          {% for recommendation in recommendations %}
+            <li><i class="fas fa-check-circle"></i> {{ recommendation }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    
+    {% elif error %}
+      <!-- Display Error if Any -->
+      <div class="error-message">
+        <h1><i class="fas fa-exclamation-triangle"></i> {{ error }}</h1>
+      </div>
+
+    {% else %}
+      <!-- Fallback Error Message -->
+      <div class="error-message">
+        <h1><i class="fas fa-exclamation-triangle"></i> Error: No result found!</h1>
+      </div>
+    {% endif %}
+
+    <!-- Back to Home Button -->
+    <div class="back-home-btn">
+      <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
